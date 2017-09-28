@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+
+    </data>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="16dp"
+        >
+
+        <TextView
+            android:id="@+id/tv_period_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+           android:background="@color/colorPrimary"
+            android:text="时长（分钟）"
+            />
+
+        <TextView
+            android:id="@+id/tv_task_period"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:text="任务"
+            android:layout_below="@id/tv_period_bar"
+            />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_toRightOf="@id/tv_task_period"
+            android:layout_alignTop="@id/tv_task_period"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:drawableEnd="@drawable/ic_clear"
+            />
+
+
+    </RelativeLayout>
+
+
+</layout>
+

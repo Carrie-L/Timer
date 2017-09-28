@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Timer</string>
+    <string name="start">START</string>
+    <string name="pause">PAUSING</string>
+    <string name="timer">%dmin</string>
+    <string name="prepare">&#8230;</string>
+</resources>
