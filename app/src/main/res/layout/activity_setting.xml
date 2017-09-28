@@ -2,7 +2,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
-
+        <variable
+            name="model"
+            type="com.ripple.lib.standreminder.SettingActivity"/>
 
     </data>
 
@@ -10,36 +12,118 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="16dp"
-        >
+        android:paddingTop="16dp">
 
         <TextView
             android:id="@+id/tv_period_bar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-           android:background="@color/colorPrimary"
+            android:layout_height="32dp"
+            android:background="@color/colorPrimary"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp"
             android:text="时长（分钟）"
-            />
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/tv_task_period"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:gravity="center_vertical"
-            android:text="任务"
             android:layout_below="@id/tv_period_bar"
-            />
+            android:layout_marginLeft="16dp"
+            android:gravity="center_vertical"
+            android:text="任务" />
 
         <EditText
+            android:id="@+id/et_task_period"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_toRightOf="@id/tv_task_period"
             android:layout_alignTop="@id/tv_task_period"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:drawableEnd="@drawable/ic_clear"
+            android:inputType="number"
+            android:layout_toRightOf="@id/tv_task_period"
+            android:text="@={model.taskPeriod}"
+            android:hint="@{model.taskPeriod}"
             />
+
+        <TextView
+            android:id="@+id/tv_relax_period"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_below="@id/tv_task_period"
+            android:layout_marginLeft="16dp"
+            android:gravity="center_vertical"
+            android:text="休息" />
+
+        <EditText
+            android:id="@+id/et_relax_period"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_alignTop="@id/tv_relax_period"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_toRightOf="@id/tv_relax_period"
+            android:inputType="number"
+            android:text="@={model.relaxPeriod}"
+            android:hint="@{model.relaxPeriod}"
+            />
+
+        <TextView
+            android:id="@+id/tv_words_bar"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:background="@color/colorPrimary"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:text="文字"
+            android:textColor="@color/white"
+            android:layout_below="@id/tv_relax_period"
+            android:layout_marginTop="16dp"
+            />
+
+        <TextView
+            android:id="@+id/tv_task_words"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_below="@id/tv_words_bar"
+            android:layout_marginLeft="16dp"
+            android:gravity="center_vertical"
+            android:text="任务" />
+
+        <EditText
+            android:id="@+id/et_task_words"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_alignTop="@id/tv_task_words"
+            android:layout_toRightOf="@id/tv_task_words"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:text="@={model.taskWords}"
+            android:hint="@{model.taskWords}"
+            />
+
+        <TextView
+            android:id="@+id/tv_relax_words"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_below="@id/tv_task_words"
+            android:layout_marginLeft="16dp"
+            android:gravity="center_vertical"
+            android:text="休息" />
+
+        <EditText
+            android:id="@+id/et_relax_words"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_alignTop="@id/tv_relax_words"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_toRightOf="@id/tv_relax_words"
+            android:text="@={model.relaxWords}"
+            android:hint="@{model.relaxWords}"
+            />
+
+
 
 
     </RelativeLayout>

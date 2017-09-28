@@ -8,6 +8,8 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableField;
 import android.net.Uri;
@@ -46,14 +48,18 @@ import io.reactivex.functions.Function;
 
 import static android.R.attr.fragment;
 import static com.ripple.lib.standreminder.R.string.timer;
+import static com.ripple.lib.standreminder.SettingActivity.RELAS_PERIOD;
+import static com.ripple.lib.standreminder.SettingActivity.RELAS_WORDS;
+import static com.ripple.lib.standreminder.SettingActivity.TASK_PERIOD;
+import static com.ripple.lib.standreminder.SettingActivity.TASK_WORDS;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
-    private final String MSG_WORKING = "WORKING!!";
-    private final String MSG_RELAX = "Have a relax~~\n(*^▽^*)";
-    final long WORK_SECONDS = 5 * 60;
-    final long RELAX_SECONDS = 1 * 60;
+    private String MSG_WORKING = "WORKING!!";
+    private String MSG_RELAX = "Have a relax~~\n(*^▽^*)";
+    private long WORK_SECONDS = 5;
+    private long RELAX_SECONDS = 1;
 
     private static final int STATUS_START = 0;
     private static final int STATUS_RUNNING = 1;
@@ -64,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvTimer;
     private AbsoluteSizeSpan span;
     private String mSountPath;
+    private SharedPreferences sp;
 
     @IntDef({STATUS_START, STATUS_RUNNING, STATUS_PAUSE})
     @Retention(RetentionPolicy.SOURCE)
@@ -85,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         bg.set(getResources().getColor(R.color.orange));
         setStatusColor(getResources().getColor(R.color.orange));
 
+        sp = getSharedPreferences("setting", MODE_PRIVATE);
 
 
         span = new AbsoluteSizeSpan(48, true);
@@ -97,6 +105,23 @@ public class MainActivity extends AppCompatActivity {
         getFragmentManager().beginTransaction()
                 .add(R.id.content_frame, new SettingFragment()).commit();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (sp.getString(TASK_WORDS, "").isEmpty()) {//初始化数值
+            sp.edit().putString(TASK_WORDS, MSG_WORKING).putString(RELAS_WORDS, MSG_RELAX)
+                    .putString(TASK_PERIOD, WORK_SECONDS + "").putString(RELAS_PERIOD, RELAX_SECONDS + "")
+                    .apply();
+            WORK_SECONDS = WORK_SECONDS * 60;
+            RELAX_SECONDS = RELAX_SECONDS * 60;
+        } else {
+            WORK_SECONDS = Integer.valueOf(sp.getString(TASK_PERIOD, "1")) * 60;
+            RELAX_SECONDS = Integer.valueOf(sp.getString(RELAS_PERIOD, "1")) * 60;
+            MSG_WORKING = sp.getString(TASK_WORDS, "");
+            MSG_RELAX = sp.getString(RELAS_WORDS, "");
+        }
     }
 
     private void timer(final long second) {
@@ -197,12 +222,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setting() {
-        FrameLayout frameLayout= (FrameLayout) findViewById(R.id.content_frame);
-        if(frameLayout.getVisibility()==View.INVISIBLE){
-            frameLayout.setVisibility(View.VISIBLE);
-        }else{
-            frameLayout.setVisibility(View.INVISIBLE);
-        }
+//        FrameLayout frameLayout= (FrameLayout) findViewById(R.id.content_frame);
+//        if(frameLayout.getVisibility()==View.INVISIBLE){
+//            frameLayout.setVisibility(View.VISIBLE);
+//        }else{
+//            frameLayout.setVisibility(View.INVISIBLE);
+//        }
+
+        Intent intent = new Intent(this, SettingActivity.class);
+        startActivity(intent);
+
     }
 
     private void initNotification() {
