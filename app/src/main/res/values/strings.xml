@@ -4,4 +4,6 @@
     <string name="pause">PAUSING</string>
     <string name="timer">%dmin</string>
     <string name="prepare">&#8230;</string>
+    <string name="times">回合%d</string>
+    <!--—— 倒计时%2d分钟-->
 </resources>

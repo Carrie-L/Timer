@@ -30,6 +30,15 @@
             android:scaleType="center"
             android:src="@drawable/ic_setting" />
 
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:onClick="@{()->model.restart()}"
+            android:scaleType="center"
+            android:src="@drawable/ic_refresh"
+            android:layout_toLeftOf="@id/iv_setting"
+            />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -44,6 +44,7 @@
             android:layout_toRightOf="@id/tv_task_period"
             android:text="@={model.taskPeriod}"
             android:hint="@{model.taskPeriod}"
+
             />
 
         <TextView

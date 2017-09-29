@@ -1,18 +1,12 @@
 package com.ripple.lib.standreminder;
 
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
-import android.app.Notification;
 import android.app.NotificationManager;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableField;
-import android.net.Uri;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.annotation.IntDef;
 import android.support.v4.app.NotificationCompat;
@@ -21,22 +15,18 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
-import android.text.style.TextAppearanceSpan;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ripple.lib.standreminder.databinding.ActivityMainBinding;
+import com.ripple.lib.standreminder.utils.DateUtil;
 import com.ripple.lib.standreminder.utils.LogUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -46,33 +36,38 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 
-import static android.R.attr.fragment;
 import static com.ripple.lib.standreminder.R.string.timer;
 import static com.ripple.lib.standreminder.SettingActivity.RELAS_PERIOD;
 import static com.ripple.lib.standreminder.SettingActivity.RELAS_WORDS;
 import static com.ripple.lib.standreminder.SettingActivity.TASK_PERIOD;
 import static com.ripple.lib.standreminder.SettingActivity.TASK_WORDS;
 
+
+/**
+ * todo 倒计时进度条
+ */
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
-    private String MSG_WORKING = "WORKING!!";
-    private String MSG_RELAX = "Have a relax~~\n(*^▽^*)";
+    public static String MSG_WORKING = "WORKING!!";
+    public static String MSG_RELAX = "Have a relax~~\n(*^▽^*)";
     private long WORK_SECONDS = 5;
     private long RELAX_SECONDS = 1;
+    private int times = 0;//回合
 
     private static final int STATUS_START = 0;
-    private static final int STATUS_RUNNING = 1;
     private static final int STATUS_PAUSE = -1;
-    private NotificationCompat.Builder mBuilder;
-    private NotificationManager mNotificationManager;
+    public static final int STATUS_WORKING = 1;
+    public static final int STATUS_RELAXING = 2;
+
     private SpannableString ss;
     private TextView tvTimer;
     private AbsoluteSizeSpan span;
-    private String mSountPath;
     private SharedPreferences sp;
+    private SharedPreferences spRecorder;
+    private Intent intent;
 
-    @IntDef({STATUS_START, STATUS_RUNNING, STATUS_PAUSE})
+    @IntDef({STATUS_START, STATUS_WORKING, STATUS_RELAXING, STATUS_PAUSE})
     @Retention(RetentionPolicy.SOURCE)
     private @interface status {
     }
@@ -89,30 +84,32 @@ public class MainActivity extends AppCompatActivity {
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setModel(this);
 
+        LogUtil.e(TAG, "onCreate");
+
         bg.set(getResources().getColor(R.color.orange));
         setStatusColor(getResources().getColor(R.color.orange));
 
         sp = getSharedPreferences("setting", MODE_PRIVATE);
-
+        spRecorder = getSharedPreferences("recorder", MODE_APPEND);
 
         span = new AbsoluteSizeSpan(48, true);
         tvTimer = binding.tvTimer;
         tvTimer.setText(getString(R.string.start));
 
-        initNotification();
-
         // Display the fragment as the main content.
-        getFragmentManager().beginTransaction()
-                .add(R.id.content_frame, new SettingFragment()).commit();
-
+//        getFragmentManager().beginTransaction()
+//                .add(R.id.content_frame, new SettingFragment()).commit();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (sp.getString(TASK_WORDS, "").isEmpty()) {//初始化数值
+        LogUtil.e(TAG, "onResume");
+
+        if (sp.getBoolean("FirstRunning", true)) {//初始化数值
             sp.edit().putString(TASK_WORDS, MSG_WORKING).putString(RELAS_WORDS, MSG_RELAX)
                     .putString(TASK_PERIOD, WORK_SECONDS + "").putString(RELAS_PERIOD, RELAX_SECONDS + "")
+                    .putBoolean("FirstRunning", false)
                     .apply();
             WORK_SECONDS = WORK_SECONDS * 60;
             RELAX_SECONDS = RELAX_SECONDS * 60;
@@ -124,13 +121,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        LogUtil.e(TAG, "onNewIntent");
+    }
+
     private void timer(final long second) {
         Observable.interval(1, 1, TimeUnit.SECONDS)
                 .take(second)
                 .map(new Function<Long, Long>() {
                     @Override
                     public Long apply(Long v) throws Exception {
-                        LogUtil.i(TAG, "apply : v=" + v);
                         return second - v;
                     }
                 })
@@ -144,21 +146,33 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             tvTimer.setText(getString(R.string.prepare));
                         }
+
+                        intent = new Intent(MainActivity.this, TimerService.class);
+                        if (STATUS == STATUS_WORKING) {
+                            times += 1;//开始下一次工作计时了才算一个回合过去了
+                            msg.set(MSG_WORKING);
+                            bg.set(getResources().getColor(R.color.orange));
+                            setStatusColor(getResources().getColor(R.color.orange));
+                        } else if (STATUS == STATUS_RELAXING) {
+                            msg.set(MSG_RELAX);
+                            bg.set(getResources().getColor(R.color.green));
+                            setStatusColor(getResources().getColor(R.color.green));
+                        }
+                        intent.putExtra("msg", msg.get());
+                        intent.putExtra("STATUS", STATUS);
+                        intent.putExtra("times", times);
+                        startService(intent);
                     }
 
                     @Override
                     public void onNext(@NonNull Long aLong) {
-                        LogUtil.i(TAG, "count down : aLong=" + aLong);
                         mRestSecond = aLong;
-
                         if (aLong % 60 == 0) {
                             LogUtil.i(TAG, "count down : aLong=" + aLong + "," + (aLong % 60));
-                            ss = new SpannableString(String.format(getString(R.string.timer), aLong / 60));
+                            ss = new SpannableString(String.format(getString(timer), aLong / 60));
                             ss.setSpan(span, 0, ss.length() - 3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                             tvTimer.setText(ss);
                         }
-
-
                     }
 
                     @Override
@@ -168,50 +182,40 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onComplete() {
-                        LogUtil.i(TAG, "----------倒计时结束------------");
+                        LogUtil.i(TAG, "----------倒计时结束------------times=" + times);
 
-                        if (second == RELAX_SECONDS) {
-                            bg.set(getResources().getColor(R.color.orange));
-                            setStatusColor(getResources().getColor(R.color.orange));
-                            mBuilder.setContentText(MSG_WORKING)
-                                    .setSmallIcon(R.drawable.ic_busy)
-                                    .setTicker(MSG_WORKING);
-                            msg.set(MSG_WORKING);
+                        if (STATUS == STATUS_RELAXING) {
+                            STATUS = STATUS_WORKING;
                             timer(WORK_SECONDS);
-                        } else {
-                            bg.set(getResources().getColor(R.color.green));
-                            setStatusColor(getResources().getColor(R.color.green));
-                            mBuilder.setContentText(MSG_RELAX)
-                                    .setSmallIcon(R.drawable.ic_relax)
-                                    .setTicker(MSG_RELAX);
-                            msg.set(MSG_RELAX);
+                        } else if (STATUS == STATUS_WORKING) {
+                            STATUS = STATUS_RELAXING;
                             timer(RELAX_SECONDS);
                         }
-                        mNotificationManager.notify(1, mBuilder.build());
-
-
                     }
                 });
     }
 
+
     @status
-    private int status = STATUS_START;
+    private int STATUS = STATUS_START;
 
     public void click() {
-        switch (status) {
+        switch (STATUS) {
             case STATUS_START:// 状态为【尚未开始】，点击开始
-                status = STATUS_RUNNING;
-                msg.set(MSG_WORKING);
-                timer(WORK_SECONDS);
+                start();
                 break;
             case STATUS_PAUSE:// 状态为【暂停】，点击继续
-                status = STATUS_RUNNING;
+                STATUS = STATUS_WORKING;
+                times -= 1;
                 timer(mRestSecond);
                 break;
-            case STATUS_RUNNING://状态为【计时中】，点击暂停
-                status = STATUS_PAUSE;
+            case STATUS_WORKING://状态为【工作中】，点击暂停
+                STATUS = STATUS_PAUSE;
                 tvTimer.setText(getString(R.string.pause));
                 mDisposable.dispose();
+                break;
+            case STATUS_RELAXING://状态为【休息中】，不允许暂停
+                STATUS = STATUS_RELAXING;
                 break;
         }
 
@@ -228,20 +232,22 @@ public class MainActivity extends AppCompatActivity {
 //        }else{
 //            frameLayout.setVisibility(View.INVISIBLE);
 //        }
-
         Intent intent = new Intent(this, SettingActivity.class);
         startActivity(intent);
-
     }
 
-    private void initNotification() {
-        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mBuilder = new NotificationCompat.Builder(MainActivity.this)
-                .setSmallIcon(R.drawable.ic_busy)
-                .setContentTitle(getString(R.string.app_name));
-        mBuilder.setDefaults(Notification.DEFAULT_VIBRATE);
-        mSountPath = "android.resource://com.ripple.lib.standreminder/";
-        mBuilder.setSound(Uri.parse(mSountPath + R.raw.mps));
+    private void start() {
+        spRecorder.edit().putString(DateUtil.getCurrentDateTime(), "start").apply();
+        STATUS = STATUS_WORKING;
+        msg.set(MSG_WORKING);
+        timer(WORK_SECONDS);
+    }
+
+    public void restart() {
+        dispose();
+        ss = null;
+        times = 0;  //重新计数
+        start();
     }
 
     private void setStatusColor(int color) {
@@ -286,13 +292,21 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        moveTaskToBack(true);
+//        moveTaskToBack(true);
+        moveTaskToBack(false);
+
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         LogUtil.e(TAG, "onDestroy");
+        spRecorder.edit().putString(DateUtil.getCurrentDateTime(), "destroy").apply();
+        dispose();
+    }
+
+    private void dispose() {
         if (mDisposable != null && !mDisposable.isDisposed()) {
             mDisposable.dispose();
         }
@@ -307,26 +321,5 @@ public class MainActivity extends AppCompatActivity {
 //        return super.onKeyDown(keyCode, event);
 //    }
 
-    //监听home键,无法阻止Home键的退出
-//    @Override
-//    protected void onPause() {
-//        if(isApplicationSentToBackground(this)){
-//            Toast.makeText(this,"cannot home",Toast.LENGTH_SHORT).show();
-//
-//        }
-//        super.onPause();
-//    }
-//
-//    public boolean isApplicationSentToBackground(final Context context) {
-//        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-//        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);
-//        if (!tasks.isEmpty()) {
-//            ComponentName topActivity = tasks.get(0).topActivity;
-//            if (!topActivity.getPackageName().equals(context.getPackageName())) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
 
 }
