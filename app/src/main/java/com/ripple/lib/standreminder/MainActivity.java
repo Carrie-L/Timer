@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableField;
 import android.graphics.Bitmap;
@@ -49,8 +50,8 @@ import static com.ripple.lib.standreminder.SettingActivity.TASK_WORDS;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
-    public static String MSG_WORKING = "WORKING!!";
-    public static String MSG_RELAX = "Have a relax~~\n(*^▽^*)";
+    public static String MSG_WORKING = "WORKING!!\n成为社畜!!!";
+    public static String MSG_RELAX = "Have a break~~\n(*^▽^*)";
     private long WORK_SECONDS = 5;
     private long RELAX_SECONDS = 1;
     private int times = 0;//回合
@@ -288,6 +289,13 @@ public class MainActivity extends AppCompatActivity {
         statusView.setLayoutParams(params);
         statusView.setBackgroundColor(color);
         return statusView;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        LogUtil.e(TAG,"onConfigurationChanged");
+
     }
 
     @Override
