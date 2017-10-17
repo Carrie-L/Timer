@@ -1,30 +1,21 @@
 package com.ripple.lib.standreminder;
 
-import android.app.IntentService;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.IBinder;
-import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 
 import com.ripple.lib.standreminder.utils.LogUtil;
 
-import static android.app.PendingIntent.FLAG_NO_CREATE;
-import static android.content.ContentValues.TAG;
-import static com.ripple.lib.standreminder.MainActivity.MSG_RELAX;
-import static com.ripple.lib.standreminder.MainActivity.MSG_WORKING;
 import static com.ripple.lib.standreminder.MainActivity.STATUS_RELAXING;
 import static com.ripple.lib.standreminder.MainActivity.STATUS_WORKING;
-import static com.ripple.lib.standreminder.R.string.times;
+
 
 /**
  * Created by Carrie on 2017/9/29.
@@ -87,8 +78,8 @@ public class TimerService extends Service {
 
 
     private void initNotification() {
-        bmWork = BitmapFactory.decodeResource(getResources(), R.drawable.ic_busy_cd);
-        bmRelax = BitmapFactory.decodeResource(getResources(), R.drawable.ic_relax_cd);
+        bmWork = BitmapFactory.decodeResource(getResources(), R.drawable.ic_busy);
+        bmRelax = BitmapFactory.decodeResource(getResources(), R.drawable.ic_relax);
         mBuilder = new NotificationCompat.Builder(this.getApplicationContext())
                 .setSmallIcon(R.drawable.ic_busy)
                 .setLargeIcon(bmWork)

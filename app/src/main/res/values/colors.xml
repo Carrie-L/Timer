@@ -3,7 +3,7 @@
     <color name="colorPrimary">#00BCD4</color>
     <color name="colorPrimaryDark">#0097A7</color>
     <color name="primary_light">#B2EBF2</color>
-    <color name="colorAccent">#9E9E9E</color>
+    <color name="colorAccent">#FF4081</color>
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#757575</color>
     <color name="icons">#FFFFFF</color>
@@ -11,6 +11,6 @@
     <color name="orange">#F44336</color>
     <color name="green">#8BC34A</color>
     <color name="white">#ffffff</color>
-    <color name="transparent_setting">#CCF44336</color>
+    <color name="transparent_setting">#4DFFFFFF</color>
 
 </resources>

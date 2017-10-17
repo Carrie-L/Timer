@@ -1,134 +1,430 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="model"
-            type="com.ripple.lib.standreminder.SettingActivity"/>
-
+            type="com.ripple.lib.standreminder.SettingActivity" />
     </data>
 
-
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="16dp">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/tv_period_bar"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="32dp"
-            android:background="@color/colorPrimary"
-            android:gravity="center_vertical"
-            android:paddingLeft="16dp"
-            android:text="时长（分钟）"
-            android:textColor="@color/white" />
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/tv_task_period"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_below="@id/tv_period_bar"
-            android:layout_marginLeft="16dp"
-            android:gravity="center_vertical"
-            android:text="任务" />
+            <TextView
+                android:id="@+id/tv_header"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@color/colorPrimary" />
 
-        <EditText
-            android:id="@+id/et_task_period"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_alignTop="@id/tv_task_period"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:inputType="number"
-            android:layout_toRightOf="@id/tv_task_period"
-            android:text="@={model.taskPeriod}"
-            android:hint="@{model.taskPeriod}"
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:onClick="@{()->model.onBack()}"
+                android:scaleType="center"
+                android:src="@drawable/ic_back" />
 
-            />
-
-        <TextView
-            android:id="@+id/tv_relax_period"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_below="@id/tv_task_period"
-            android:layout_marginLeft="16dp"
-            android:gravity="center_vertical"
-            android:text="休息" />
-
-        <EditText
-            android:id="@+id/et_relax_period"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_alignTop="@id/tv_relax_period"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_toRightOf="@id/tv_relax_period"
-            android:inputType="number"
-            android:text="@={model.relaxPeriod}"
-            android:hint="@{model.relaxPeriod}"
-            />
-
-        <TextView
-            android:id="@+id/tv_words_bar"
-            android:layout_width="match_parent"
-            android:layout_height="32dp"
-            android:background="@color/colorPrimary"
-            android:gravity="center_vertical"
-            android:paddingLeft="16dp"
-            android:text="文字"
-            android:textColor="@color/white"
-            android:layout_below="@id/tv_relax_period"
-            android:layout_marginTop="16dp"
-            />
-
-        <TextView
-            android:id="@+id/tv_task_words"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_below="@id/tv_words_bar"
-            android:layout_marginLeft="16dp"
-            android:gravity="center_vertical"
-            android:text="任务" />
-
-        <EditText
-            android:id="@+id/et_task_words"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_alignTop="@id/tv_task_words"
-            android:layout_toRightOf="@id/tv_task_words"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:text="@={model.taskWords}"
-            android:hint="@{model.taskWords}"
-            />
-
-        <TextView
-            android:id="@+id/tv_relax_words"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_below="@id/tv_task_words"
-            android:layout_marginLeft="16dp"
-            android:gravity="center_vertical"
-            android:text="休息" />
-
-        <EditText
-            android:id="@+id/et_relax_words"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_alignTop="@id/tv_relax_words"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_toRightOf="@id/tv_relax_words"
-            android:text="@={model.relaxWords}"
-            android:hint="@{model.relaxWords}"
-            />
+            <TextView
+                android:id="@+id/tv_period_bar"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_below="@id/tv_header"
+                android:background="@color/colorPrimary"
+                android:gravity="center_vertical"
+                android:paddingLeft="16dp"
+                android:text="@string/customize"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
 
 
+            <TextView
+                android:id="@+id/tv_long"
+                style="@style/custom_label_style"
+                android:layout_below="@id/tv_period_bar"
+                android:text="@string/customize_long" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/met_work_long"
+                style="@style/custom_edit_style"
+                android:layout_width="160dp"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/tv_long"
+                android:layout_marginLeft="16dp"
+                android:inputType="number"
+                android:text="@={model.taskPeriod}"
+                app:met_floatingLabelText="@string/long_work"
+                app:met_singleLineEllipsis="true" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/met_relax_long"
+                style="@style/custom_edit_style"
+                android:layout_width="160dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="16dp"
+                android:layout_toRightOf="@id/met_work_long"
+                android:inputType="number"
+                android:text="@={model.relaxPeriod}"
+                app:met_floatingLabelText="@string/long_relax"
+                app:met_singleLineEllipsis="true" />
 
 
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/tv_text"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="16dp"
+                android:textColor="@color/colorPrimary"
+                android:layout_below="@id/met_work_long"
+                android:text="@string/customize_text" />
 
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/met_work_text"
+                style="@style/custom_edit_style"
+                android:layout_width="match_parent"
+                android:layout_below="@id/tv_text"
+                android:layout_marginRight="16dp"
+                android:maxLines="3"
+                android:text="@={model.taskWords}"
+                app:met_floatingLabelText="@string/text_work"
+                app:met_helperText="@string/text_length_tip" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/met_relax_text"
+                style="@style/custom_edit_style"
+                android:layout_width="match_parent"
+                android:layout_below="@id/met_work_text"
+                android:layout_marginRight="16dp"
+                android:maxLines="3"
+                android:text="@={model.relaxWords}"
+                app:met_floatingLabelText="@string/text_relax"
+                app:met_helperText="@string/text_length_tip" />
+
+
+            <!--背景颜色-->
+            <TextView
+                android:id="@+id/tv_bg_color"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="16dp"
+                android:textColor="@color/colorPrimary"
+                android:layout_below="@id/met_relax_text"
+                android:text="@string/customize_bg_color" />
+
+            <TextView
+                android:id="@+id/work_bg_color"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_below="@id/tv_bg_color"
+                android:layout_marginLeft="16dp"
+                android:gravity="center_vertical"
+                android:text="@string/bg_color_work" />
+
+            <TextView
+                android:id="@+id/relax_bg_color"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_below="@id/work_bg_color"
+                android:layout_marginLeft="16dp"
+                android:gravity="center_vertical"
+                android:text="@string/bg_color_relax" />
+
+            <ImageView
+                android:id="@+id/work_bg_color_palette"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@id/work_bg_color"
+                android:layout_marginRight="16dp"
+                android:scaleType="center"
+                android:onClick="@{()->model.onColorPalette(model.BG_COLOR_TASK)}"
+                android:src="@drawable/ic_color_palette" />
+
+            <ImageView
+                android:id="@+id/work_bg_color_current"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignTop="@id/work_bg_color"
+                android:layout_marginRight="12dp"
+                android:layout_marginTop="4dp"
+                android:layout_toLeftOf="@id/work_bg_color_palette"
+                android:background="@{model.bgTaskColor}" />
+
+            <ImageView
+                android:id="@+id/relax_bg_color_palette"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@id/relax_bg_color"
+                android:layout_marginRight="16dp"
+                android:scaleType="center"
+                android:src="@drawable/ic_color_palette"
+                android:onClick="@{()->model.onColorPalette(model.BG_COLOR_RELAX)}"
+                />
+
+            <ImageView
+                android:id="@+id/relax_bg_color_current"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignTop="@id/relax_bg_color"
+                android:layout_marginRight="12dp"
+                android:layout_marginTop="4dp"
+                android:layout_toLeftOf="@id/relax_bg_color_palette"
+                android:background="@{model.bgRelaxColor}"
+                />
+
+            <!--文字颜色-->
+            <TextView
+                android:id="@+id/tv_text_color"
+                style="@style/custom_label_style"
+                android:layout_below="@id/relax_bg_color"
+                android:text="@string/customize_text_color" />
+
+            <TextView
+                android:id="@+id/work_text_color"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_below="@id/tv_text_color"
+                android:layout_marginLeft="16dp"
+                android:gravity="center_vertical"
+                android:text="@string/text_color_work" />
+
+            <TextView
+                android:id="@+id/relax_text_color"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_below="@id/work_text_color"
+                android:layout_marginLeft="16dp"
+                android:gravity="center_vertical"
+                android:text="@string/text_color_relax" />
+
+            <ImageView
+                android:id="@+id/work_text_color_palette"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@id/work_text_color"
+                android:layout_marginRight="16dp"
+                android:scaleType="center"
+                android:onClick="@{()->model.onColorPalette(model.TEXT_COLOR_TASK)}"
+                android:src="@drawable/ic_color_palette" />
+
+            <TextView
+                android:id="@+id/work_text_color_current"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignTop="@id/work_text_color"
+                android:layout_marginRight="12dp"
+                android:layout_marginTop="4dp"
+                android:text="@string/A"
+                android:gravity="center"
+                android:layout_toLeftOf="@id/work_text_color_palette"
+                android:background="@color/orange"
+                android:textColor="@{model.textTaskColor}"
+                />
+
+            <ImageView
+                android:id="@+id/relax_text_color_palette"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@id/relax_text_color"
+                android:layout_marginRight="16dp"
+                android:scaleType="center"
+                android:src="@drawable/ic_color_palette"
+                android:onClick="@{()->model.onColorPalette(model.TEXT_COLOR_RELAX)}"
+                />
+
+            <TextView
+                android:id="@+id/relax_text_color_current"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignTop="@id/relax_text_color"
+                android:layout_marginRight="12dp"
+                android:layout_marginTop="4dp"
+                android:text="@string/A"
+                android:textColor="@{model.textRelaxColor}"
+                android:gravity="center"
+                android:layout_toLeftOf="@id/relax_text_color_palette"
+                android:background="@color/green" />
+
+
+            <!--提示音-->
+            <TextView
+                android:id="@+id/tv_sound"
+                style="@style/custom_label_style"
+                android:layout_below="@id/relax_text_color"
+                android:text="@string/customize_sound" />
+
+            <TextView
+                android:id="@+id/work_sound"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_below="@id/tv_sound"
+                android:layout_marginLeft="16dp"
+                android:gravity="center_vertical"
+                android:text="@string/sound_work" />
+
+            <TextView
+                android:id="@+id/relax_sound"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_below="@id/work_sound"
+                android:layout_marginLeft="16dp"
+                android:gravity="center_vertical"
+                android:text="@string/sound_relax" />
+
+            <ImageView
+                android:id="@+id/sound_select_work"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@id/work_sound"
+                android:layout_marginRight="16dp"
+                android:scaleType="center"
+                android:src="@drawable/ic_sound" />
+
+            <TextView
+                android:id="@+id/sound_name_work"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_alignTop="@id/work_sound"
+                android:layout_marginRight="12dp"
+                android:layout_toLeftOf="@id/sound_select_work"
+                android:gravity="center_vertical"
+                android:text="喵帕斯" />
+
+            <ImageView
+                android:id="@+id/sound_select_relax"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@id/relax_sound"
+                android:layout_marginRight="16dp"
+                android:scaleType="center"
+                android:src="@drawable/ic_sound" />
+
+            <TextView
+                android:id="@+id/sound_name_relax"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_alignTop="@id/relax_sound"
+                android:layout_marginRight="12dp"
+                android:layout_toLeftOf="@id/sound_select_relax"
+                android:gravity="center_vertical"
+                android:text="喵帕斯" />
+
+            <!--音量-->
+            <TextView
+                android:id="@+id/tv_volume"
+                style="@style/custom_label_style"
+                android:layout_below="@id/relax_sound"
+                android:text="@string/customize_volume" />
+
+            <SeekBar
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/relax_sound"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="32dp" />
+
+            <!--震动-->
+            <TextView
+                android:id="@+id/tv_vibrate"
+                style="@style/custom_label_style"
+                android:layout_below="@id/tv_volume"
+                android:text="@string/customize_vibrate" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/tv_vibrate"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="16dp"
+                android:checked="@{model.isVibrate}"
+                android:id="@+id/switch_vibrate" />
+
+            <!--屏幕常亮-->
+            <TextView
+                android:id="@+id/tv_screen_on"
+                style="@style/custom_label_style"
+                android:layout_below="@id/tv_vibrate"
+                android:text="@string/customize_screen_on" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/switch_screen_on"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="@{model.isScreenOn}"
+                android:layout_marginRight="16dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignBaseline="@+id/tv_screen_on"
+                android:layout_alignBottom="@+id/tv_screen_on"
+               />
+
+            <!--全部还原-->
+            <TextView
+                android:id="@+id/tv_reset_all"
+                style="@style/custom_label_style"
+                android:layout_below="@id/tv_screen_on"
+                android:text="@string/customize_reset_all" />
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_below="@id/tv_screen_on"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="2dp"
+                android:src="@drawable/btn_reset"
+                android:scaleType="center"
+                android:onClick="@{()->model.onResetAll()}"
+                />
+
+            <!--关于-->
+            <TextView
+                android:id="@+id/tv_about"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_below="@id/tv_reset_all"
+                android:layout_marginTop="32dp"
+                android:background="@color/colorPrimary"
+                android:gravity="center_vertical"
+                android:paddingLeft="16dp"
+                android:text="@string/about"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_about_app"
+                style="@style/custom_label_style"
+                android:layout_below="@id/tv_about"
+                android:text="@string/about_app" />
+
+            <TextView
+                android:id="@+id/tv_about_help"
+                style="@style/custom_label_style"
+                android:layout_below="@id/tv_about_app"
+                android:text="@string/about_help" />
+
+            <TextView
+                android:id="@+id/tv_about_feedback"
+                style="@style/custom_label_style"
+                android:layout_below="@id/tv_about_help"
+                android:paddingBottom="16dp"
+                android:text="@string/about_feedback" />
+
+
+        </RelativeLayout>
+    </ScrollView>
 
 </layout>
 

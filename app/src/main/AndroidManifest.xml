@@ -25,11 +25,8 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".SettingActivity"
-            android:screenOrientation="portrait" />
-
         <service android:name=".TimerService" />
+        <activity android:name=".SettingActivity"/>
 
     </application>
 

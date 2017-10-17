@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
         <variable
-            name="model"
+            name="activity"
             type="com.ripple.lib.standreminder.MainActivity" />
     </data>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@{model.bg}">
+        android:background="@{activity.bg}">
 
         <ImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_alignParentStart="true"
-            android:onClick="@{()->model.exit()}"
+            android:onClick="@{()->activity.exit()}"
             android:scaleType="center"
             android:src="@drawable/ic_exit" />
 
@@ -26,28 +27,27 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_alignParentEnd="true"
-            android:onClick="@{()->model.setting()}"
+            android:onClick="@{()->activity.setting()}"
             android:scaleType="center"
             android:src="@drawable/ic_setting" />
 
         <ImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:onClick="@{()->model.restart()}"
-            android:scaleType="center"
-            android:src="@drawable/ic_refresh"
             android:layout_toLeftOf="@id/iv_setting"
-            />
+            android:onClick="@{()->activity.restart()}"
+            android:scaleType="center"
+            android:src="@drawable/ic_refresh" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:gravity="center_horizontal"
             android:layout_marginTop="72dp"
-            android:text="@{model.msg}"
-            android:textColor="@color/white"
+            android:gravity="center_horizontal"
             android:maxLines="3"
+            android:text="@{activity.isStatusWorking?activity.taskWords:activity.relaxWords}"
+            android:textColor="@color/white"
             android:textSize="32sp"
             android:textStyle="bold" />
 
@@ -58,18 +58,10 @@
             android:layout_centerInParent="true"
             android:background="@drawable/circle"
             android:gravity="center"
-            android:onClick="@{()->model.click()}"
+            android:onClick="@{()->activity.click()}"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#fff" />
 
-        <FrameLayout
-            android:id="@+id/content_frame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/transparent_setting"
-            android:visibility="invisible"
-            android:layout_below="@id/iv_setting"
-            />
     </RelativeLayout>
 
 

@@ -1,21 +1,21 @@
 package com.ripple.lib.standreminder;
 
 import android.app.Activity;
-import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
-import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.os.Build;
-import android.support.annotation.IntDef;
-import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.IntDef;
+import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
+import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -37,29 +37,35 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 
-import static com.ripple.lib.standreminder.R.string.timer;
-import static com.ripple.lib.standreminder.SettingActivity.RELAS_PERIOD;
-import static com.ripple.lib.standreminder.SettingActivity.RELAS_WORDS;
-import static com.ripple.lib.standreminder.SettingActivity.TASK_PERIOD;
-import static com.ripple.lib.standreminder.SettingActivity.TASK_WORDS;
-
-
 /**
  * todo 倒计时进度条
  */
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
-    public static String MSG_WORKING = "WORKING!!\n成为社畜!!!";
-    public static String MSG_RELAX = "Have a break~~\n(*^▽^*)";
-    private long WORK_SECONDS = 5;
-    private long RELAX_SECONDS = 1;
+    //    public static String MSG_WORKING ;
+//    public static String MSG_RELAX ;
+    private long WORK_SECONDS;
+    private long RELAX_SECONDS;
     private int times = 0;//回合
 
     private static final int STATUS_START = 0;
     private static final int STATUS_PAUSE = -1;
     public static final int STATUS_WORKING = 1;
     public static final int STATUS_RELAXING = 2;
+
+    public final ObservableField<String> taskPeriod = new ObservableField<>("1");
+    public final ObservableField<String> relaxPeriod = new ObservableField<>("1");
+    public final ObservableField<String> taskWords = new ObservableField<>("WORKING!!\n成为社畜!!!");
+    public final ObservableField<String> relaxWords = new ObservableField<>("Have a break~~\n(*^▽^*)");
+    public final ObservableBoolean isStatusWorking = new ObservableBoolean(true);
+
+    public static final String TASK_PERIOD = "taskPeriod";
+    public static final String RELAS_PERIOD = "relaxPeriod";
+    public static final String TASK_WORDS = "taskWords";
+    public static final String RELAS_WORDS = "relaxWords";
+    public static final String BG_COLOR_WORKING = "BgColorWorking";
+    public static final String BG_COLOR_RELAXING = "BgColorRelaxing";
 
     private SpannableString ss;
     private TextView tvTimer;
@@ -73,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
     private @interface status {
     }
 
-    public final ObservableField<String> msg = new ObservableField<>();
+    //    public final ObservableField<String> msg = new ObservableField<>();
     public final ObservableField<Integer> bg = new ObservableField<>();
 
     private Disposable mDisposable;
@@ -83,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        binding.setModel(this);
+        binding.setActivity(this);
 
         LogUtil.e(TAG, "onCreate");
 
@@ -97,9 +103,8 @@ public class MainActivity extends AppCompatActivity {
         tvTimer = binding.tvTimer;
         tvTimer.setText(getString(R.string.start));
 
-        // Display the fragment as the main content.
-//        getFragmentManager().beginTransaction()
-//                .add(R.id.content_frame, new SettingFragment()).commit();
+        getScreenSize();
+
     }
 
     @Override
@@ -108,18 +113,28 @@ public class MainActivity extends AppCompatActivity {
         LogUtil.e(TAG, "onResume");
 
         if (sp.getBoolean("FirstRunning", true)) {//初始化数值
-            sp.edit().putString(TASK_WORDS, MSG_WORKING).putString(RELAS_WORDS, MSG_RELAX)
-                    .putString(TASK_PERIOD, WORK_SECONDS + "").putString(RELAS_PERIOD, RELAX_SECONDS + "")
+            sp.edit().putString(TASK_WORDS, taskWords.get()).putString(RELAS_WORDS, relaxWords.get())
+                    .putString(TASK_PERIOD, String.valueOf(taskPeriod.get())).putString(RELAS_PERIOD, String.valueOf(relaxPeriod.get()))
+//                    .putInt(BG_COLOR_WORK,getResources().getColor(R.color.orange))
+//                    .putInt(BG_COLOR_RELAX,getResources().getColor(R.color.green))
                     .putBoolean("FirstRunning", false)
                     .apply();
-            WORK_SECONDS = WORK_SECONDS * 60;
-            RELAX_SECONDS = RELAX_SECONDS * 60;
         } else {
-            WORK_SECONDS = Integer.valueOf(sp.getString(TASK_PERIOD, "1")) * 60;
-            RELAX_SECONDS = Integer.valueOf(sp.getString(RELAS_PERIOD, "1")) * 60;
-            MSG_WORKING = sp.getString(TASK_WORDS, "");
-            MSG_RELAX = sp.getString(RELAS_WORDS, "");
+//            MSG_WORKING = sp.getString(TASK_WORDS, "");
+//            MSG_RELAX = sp.getString(RELAS_WORDS, "");
+            taskPeriod.set(sp.getString(TASK_PERIOD, "1"));
+            relaxPeriod.set(sp.getString(RELAS_PERIOD, "1"));
+            taskWords.set(sp.getString(TASK_WORDS, ""));
+            relaxWords.set(sp.getString(RELAS_WORDS, ""));
         }
+//        taskWords.set(MSG_WORKING);
+//        relaxWords.set(MSG_RELAX);
+//        MSG_WORKING=taskWords.get();
+//        MSG_RELAX=relaxWords.get();
+
+        WORK_SECONDS = Long.valueOf(taskPeriod.get()) * 60;
+        RELAX_SECONDS = Long.valueOf(relaxPeriod.get()) * 60;
+
     }
 
     @Override
@@ -151,15 +166,15 @@ public class MainActivity extends AppCompatActivity {
                         intent = new Intent(MainActivity.this, TimerService.class);
                         if (STATUS == STATUS_WORKING) {
                             times += 1;//开始下一次工作计时了才算一个回合过去了
-                            msg.set(MSG_WORKING);
+                            isStatusWorking.set(true);
                             bg.set(getResources().getColor(R.color.orange));
                             setStatusColor(getResources().getColor(R.color.orange));
                         } else if (STATUS == STATUS_RELAXING) {
-                            msg.set(MSG_RELAX);
+                            isStatusWorking.set(false);
                             bg.set(getResources().getColor(R.color.green));
                             setStatusColor(getResources().getColor(R.color.green));
                         }
-                        intent.putExtra("msg", msg.get());
+                        intent.putExtra("msg", taskWords.get());
                         intent.putExtra("STATUS", STATUS);
                         intent.putExtra("times", times);
                         startService(intent);
@@ -170,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                         mRestSecond = aLong;
                         if (aLong % 60 == 0) {
                             LogUtil.i(TAG, "count down : aLong=" + aLong + "," + (aLong % 60));
-                            ss = new SpannableString(String.format(getString(timer), aLong / 60));
+                            ss = new SpannableString(String.format(getString(R.string.timer), aLong / 60));
                             ss.setSpan(span, 0, ss.length() - 3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                             tvTimer.setText(ss);
                         }
@@ -184,12 +199,13 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete() {
                         LogUtil.i(TAG, "----------倒计时结束------------times=" + times);
-
                         if (STATUS == STATUS_RELAXING) {
                             STATUS = STATUS_WORKING;
+                            isStatusWorking.set(true);
                             timer(WORK_SECONDS);
                         } else if (STATUS == STATUS_WORKING) {
                             STATUS = STATUS_RELAXING;
+                            isStatusWorking.set(false);
                             timer(RELAX_SECONDS);
                         }
                     }
@@ -207,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case STATUS_PAUSE:// 状态为【暂停】，点击继续
                 STATUS = STATUS_WORKING;
+                isStatusWorking.set(true);
                 times -= 1;
                 timer(mRestSecond);
                 break;
@@ -235,12 +252,15 @@ public class MainActivity extends AppCompatActivity {
 //        }
         Intent intent = new Intent(this, SettingActivity.class);
         startActivity(intent);
+//        isShowCustom.set(!isShowCustom.get());
     }
 
     private void start() {
         spRecorder.edit().putString(DateUtil.getCurrentDateTime(), "start").apply();
+        isStatusWorking.set(true);
         STATUS = STATUS_WORKING;
-        msg.set(MSG_WORKING);
+        WORK_SECONDS = Long.valueOf(taskPeriod.get()) * 60;
+        RELAX_SECONDS = Long.valueOf(relaxPeriod.get()) * 60;
         timer(WORK_SECONDS);
     }
 
@@ -291,10 +311,24 @@ public class MainActivity extends AppCompatActivity {
         return statusView;
     }
 
+    public void getScreenSize() {
+        Display display = getWindowManager().getDefaultDisplay();
+        Point point = new Point();
+        if (Build.VERSION.SDK_INT >= 17) {
+            display.getRealSize(point);
+        } else {
+            display.getSize(point);
+        }
+        int width = point.x;
+        int height = point.y;
+        LogUtil.i(TAG, "device 的宽高为：width=" + width + ",height=" + height);
+        sp.edit().putInt("ScreenWidth", width).putInt("ScreenHeight", height).apply();
+    }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        LogUtil.e(TAG,"onConfigurationChanged");
+        LogUtil.e(TAG, "onConfigurationChanged");
 
     }
 

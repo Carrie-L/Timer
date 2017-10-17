@@ -7,7 +7,37 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/primary_text</item>
     </style>
+
+   <style name="custom_label_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="custom_edit_style">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_below">@id/tv_long</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:text">50min</item>
+        <item name="android:textSize">14sp</item>
+        <item name="met_baseColor">@color/primary_text</item>
+        <item name="met_clearButton">false</item>
+        <item name="met_floatingLabel">highlight</item>
+        <item name="met_floatingLabelAlwaysShown">true</item>
+        <item name="met_floatingLabelText">@string/long_work</item>
+        <item name="met_floatingLabelTextColor">@color/colorAccent</item>
+        <item name="met_floatingLabelTextSize">14sp</item>
+        <item name="met_primaryColor">@color/colorAccent</item>
+        <item name="met_underlineColor">@color/primary_light</item>
+    </style>
+
+
 
 
 

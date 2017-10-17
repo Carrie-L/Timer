@@ -6,4 +6,46 @@
     <string name="prepare">&#8230;</string>
     <string name="times">回合%d</string>
     <!--—— 倒计时%2d分钟-->
+
+    <string name="save">SAVE</string>
+    <string name="cancel">@android:string/cancel</string>
+
+
+
+
+    <string name="customize">私人定制</string>
+    <string name="customize_long">时长</string>
+    <string name="customize_text">文字</string>
+    <string name="customize_bg_color">背景颜色</string>
+    <string name="customize_text_color">文字颜色</string>
+    <string name="customize_sound">提示音</string>
+    <string name="customize_volume">音量</string>
+    <string name="customize_vibrate">开启震动</string>
+    <string name="customize_screen_on">屏幕常亮</string>
+    <string name="customize_ui">主题更换</string>
+    <string name="customize_reset_all">全部还原</string>
+
+    <string name="long_work">工作时长</string>
+    <string name="long_relax">休息时长</string>
+    <string name="text_work">工作文字</string>
+    <string name="text_relax">休息文字</string>
+    <string name="bg_color_work">工作背景颜色</string>
+    <string name="bg_color_relax">休息背景颜色</string>
+    <string name="text_color_work">工作文字颜色</string>
+    <string name="text_color_relax">休息文字颜色</string>
+    <string name="sound_work">工作提示音</string>
+    <string name="sound_relax">休息提示音</string>
+    <string name="screen_on_hint">开启后软件运行不锁屏</string>
+
+    <string name="about">关于</string>
+    <string name="about_app">关于本软件</string>
+    <string name="about_help">使用帮助</string>
+    <string name="about_feedback">反馈</string>
+
+    <string name="text_length_tip">最多不超过120个字</string>
+    <string name="A">A</string>
+
+
+
+
 </resources>
